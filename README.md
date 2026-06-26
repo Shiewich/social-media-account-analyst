@@ -1,5 +1,13 @@
 # Social Media Account Analyst Skill
 
+## 单文件大模型版（拖入即用）
+
+如果你使用 ChatGPT、Codex 或其他支持文件上下文的大语言模型，不需要安装完整 Skill 文件夹。直接下载 [`SOCIAL_MEDIA_ACCOUNT_ANALYST_LLM_SKILL.md`](SOCIAL_MEDIA_ACCOUNT_ANALYST_LLM_SKILL.md)，把这个 Markdown 文件拖进对话，再上传账号后台导出的 CSV/XLSX、截图或粘贴表格数据即可开始分析。
+
+- 想装进 Codex / Agent 工作流：使用本仓库的 `skill/` 文件夹。
+- 想临时交给任意大模型分析：只下载单文件版即可。
+- Raw 下载地址：<https://raw.githubusercontent.com/Shiewich/social-media-account-analyst/main/SOCIAL_MEDIA_ACCOUNT_ANALYST_LLM_SKILL.md>
+
 一个面向中文自媒体运营的 Codex Skill：把小红书、抖音后台导出的账号数据，变成能直接指导下一条内容怎么做的运营报告和互动策略看板。
 
 ![互动策略看板桌面预览](docs/images/demo-dashboard-desktop.png)

@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Dopamine-color flat dashboard assets and public interactive demo page.
 - Synthetic Xiaohongshu sample data and generic content-pillar configuration.
 - Privacy and screenshot rules for publishing masked demos without leaking account data.
+- Single-file LLM skill Markdown for drag-and-drop use in file-aware language models.
 
 ### Planned
 
