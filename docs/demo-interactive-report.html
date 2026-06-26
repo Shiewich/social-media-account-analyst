@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>自媒体账号分析 Skill 示例报告</title>
+  <style>
+    :root {
+      --pink: #ff7d9f;
+      --orange: #ff9c31;
+      --yellow: #f8e356;
+      --blue: #82a4f9;
+      --mint: #70e0c1;
+      --ink: #202231;
+      --muted: #737586;
+      --line: #ebe7ff;
+      --page: #fbf8ff;
+      --card: #ffffff;
+      --shadow: 0 16px 40px rgba(90, 70, 150, .13);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 6%, rgba(255, 125, 159, .22), transparent 26%),
+        radial-gradient(circle at 92% 10%, rgba(112, 224, 193, .24), transparent 28%),
+        linear-gradient(180deg, #fff7fb 0%, var(--page) 44%, #f7fbff 100%);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    a { color: inherit; }
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+    .hero {
+      min-height: 360px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+      align-items: center;
+      gap: 28px;
+    }
+    .hero > * { min-width: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .74);
+      border: 1px solid rgba(255, 255, 255, .9);
+      font-size: 13px;
+      font-weight: 800;
+      color: #6657c8;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      max-width: 780px;
+      font-size: clamp(34px, 5.5vw, 72px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 760px;
+      margin: 0;
+      color: #55586c;
+      font-size: 18px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+    .hero-art {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      min-height: 310px;
+      border-radius: 30px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255, 125, 159, .9), rgba(255, 156, 49, .9) 35%, rgba(248, 227, 86, .88) 58%, rgba(112, 224, 193, .92));
+      box-shadow: var(--shadow);
+    }
+    .hero-art::before,
+    .hero-art::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .6);
+      transform: rotate(-18deg);
+    }
+    .hero-art::before { width: 390px; height: 92px; left: -70px; top: 78px; }
+    .hero-art::after { width: 320px; height: 74px; right: -90px; bottom: 70px; }
+    .phone {
+      position: absolute;
+      inset: 38px 42px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, .9);
+      padding: 20px;
+      box-shadow: 0 24px 52px rgba(42, 30, 90, .18);
+      animation: floaty 5s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .phone-row {
+      display: grid;
+      grid-template-columns: 1fr 64px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .phone-line {
+      height: 18px;
+      border-radius: 999px;
+      background: #e9e5ff;
+    }
+    .phone-pill {
+      height: 42px;
+      border-radius: 14px;
+      background: var(--blue);
+    }
+    .phone-card {
+      min-height: 112px;
+      padding: 16px;
+      border-radius: 20px;
+      background: #111322;
+      color: white;
+      display: grid;
+      align-content: end;
+      gap: 10px;
+    }
+    .phone-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--pink), var(--yellow), var(--mint));
+    }
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 0;
+      margin-bottom: 16px;
+      background: rgba(251, 248, 255, .86);
+      backdrop-filter: blur(16px);
+    }
+    .tab {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #303244;
+      background: white;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(120, 92, 190, .12);
+    }
+    .tab[aria-selected="true"] {
+      color: white;
+      background: #202231;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; animation: rise .34s ease both; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .card {
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .8);
+      padding: 20px;
+      overflow: hidden;
+    }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-12 { grid-column: span 12; }
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .metric-value {
+      margin-top: 8px;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 950;
+    }
+    .metric-note {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .lead {
+      color: #4f5268;
+      line-height: 1.8;
+      margin: 10px 0 0;
+    }
+    h2, h3 { margin: 0 0 10px; letter-spacing: 0; }
+    canvas {
+      width: 100%;
+      height: 310px;
+      display: block;
+    }
+    .bar-row { margin: 18px 0; }
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 850;
+    }
+    .track {
+      height: 13px;
+      border-radius: 999px;
+      background: #eee9ff;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--pink);
+    }
+    .fill.mint { background: var(--mint); }
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .chip {
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #f4f0ff;
+      color: #555071;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .pillar {
+      min-height: 206px;
+      border-top: 8px solid var(--pink);
+    }
+    .pillar:nth-child(2) { border-top-color: var(--orange); }
+    .pillar:nth-child(3) { border-top-color: var(--yellow); }
+    .pillar:nth-child(4) { border-top-color: var(--blue); }
+    .pillar:nth-child(5) { border-top-color: var(--mint); }
+    .score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #121422;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: #fff;
+      margin-top: 12px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .idea {
+      border-left: 7px solid var(--mint);
+      padding: 16px;
+      border-radius: 16px;
+      background: #fff;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 24px rgba(100, 80, 160, .08);
+    }
+    .idea:nth-child(2) { border-left-color: var(--pink); }
+    .idea:nth-child(3) { border-left-color: var(--orange); }
+    .idea:nth-child(4) { border-left-color: var(--blue); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: #f5f1ff;
+      font-size: 12px;
+      color: #646077;
+    }
+    .privacy {
+      display: grid;
+      gap: 10px;
+      color: #55586c;
+      line-height: 1.8;
+    }
+    @media (max-width: 880px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-art { width: min(100%, calc(100vw - 40px)); min-height: 260px; border-radius: 24px; }
+      .phone { inset: 38px 32px; }
+      h1 { font-size: 32px; line-height: 1.05; }
+      h1, .subtitle { max-width: calc(100vw - 40px); }
+      .subtitle { font-size: 16px; line-height: 1.75; }
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-12 { grid-column: span 12; }
+      .app { padding: 20px 20px 38px; }
+      .tabs { max-width: calc(100vw - 40px); }
+      canvas { height: 250px; }
+      table { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">示例账号 · 小红书 / 抖音分析</span>
+        <h1>自媒体账号互动运营报告</h1>
+        <p class="subtitle">这是一份完全使用模拟数据生成的公开演示页。真实使用时，Skill 会读取账号后台导出的明细，拆分内容板块，识别高低异常，结合平台趋势和热点语境，给出下一条内容建议。</p>
+      </div>
+      <div class="hero-art" aria-label="Dopamine flat dashboard illustration">
+        <div class="phone">
+          <div class="phone-row"><div class="phone-line"></div><div class="phone-pill"></div></div>
+          <div class="phone-card">
+            <strong>下一条视频建议</strong>
+            <div class="phone-bar"></div>
+            <div class="phone-line" style="background:#303247;width:72%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="报告栏目">
+      <button class="tab" aria-selected="true" data-tab="overview">总览</button>
+      <button class="tab" aria-selected="false" data-tab="pillars">板块图谱</button>
+      <button class="tab" aria-selected="false" data-tab="anomaly">极值溯因</button>
+      <button class="tab" aria-selected="false" data-tab="ideas">下一步内容</button>
+      <button class="tab" aria-selected="false" data-tab="privacy">脱敏说明</button>
+    </nav>
+
+    <section id="overview" class="panel active">
+      <div class="grid">
+        <article class="card span-3"><div class="metric-label">总曝光</div><div class="metric-value">12.4w</div><div class="metric-note">模拟样本 48 条内容</div></article>
+        <article class="card span-3"><div class="metric-label">加权点击率</div><div class="metric-value">18.6%</div><div class="metric-note">观看 / 曝光</div></article>
+        <article class="card span-3"><div class="metric-label">总互动</div><div class="metric-value">1.9w</div><div class="metric-note">赞藏评转合计</div></article>
+        <article class="card span-3"><div class="metric-label">千次观看涨粉</div><div class="metric-value">6.8</div><div class="metric-note">衡量内容承接能力</div></article>
+        <article class="card span-7">
+          <h2>触达与转粉效率对比</h2>
+          <p class="lead">粉色代表观看占比，绿色代表转粉效率。越容易看出“有流量但不承接”和“流量小但值得放大”的板块。</p>
+          <div id="barRows"></div>
+        </article>
+        <article class="card span-5">
+          <h2>互动结构</h2>
+          <canvas id="mixChart" aria-label="Interaction mix chart"></canvas>
+        </article>
+        <article class="card span-12">
+          <h2>运营结论</h2>
+          <p class="lead">示例账号的流量入口来自“热点借势”和“轻娱乐表达”，但转粉更稳定的板块是“方法拆解”和“商业案例”。下一阶段应该用热点内容拉触达，再用一条拆解内容承接关注，把“看热闹”转成“知道你能解决问题”。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="pillars" class="panel">
+      <div class="grid">
+        <article class="card span-4 pillar">
+          <span class="score">推荐加码 92</span>
+          <h3>热点借势</h3>
+          <p class="lead">负责破圈和转发，但必须接入账号自己的方法论。</p>
+          <div class="examples"><span class="chip">例：爆款 IP 风格再创作</span><span class="chip">例：节日热点视觉实验</span></div>
+        </article>
+        <article class="card span-4 pillar">
+          <span class="score">稳定转粉 88</span>
+          <h3>方法拆解</h3>
+          <p class="lead">用步骤、模板、参数和复盘建立专业信任。</p>
+          <div class="examples"><span class="chip">例：AI 分镜拆解</span><span class="chip">例：提示词前后对比</span></div>
+        </article>
+        <article class="card span-4 pillar">
+          <span class="score">商业承接 84</span>
+          <h3>品牌案例</h3>
+          <p class="lead">最接近成交场景，适合展示从创意到交付的能力。</p>
+          <div class="examples"><span class="chip">例：虚拟品牌短片</span><span class="chip">例：产品卖点概念片</span></div>
+        </article>
+        <article class="card span-6 pillar">
+          <span class="score">情绪共鸣 79</span>
+          <h3>故事短片</h3>
+          <p class="lead">适合沉淀角色和世界观，但需要明确系列钩子。</p>
+          <div class="examples"><span class="chip">例：反转小剧场</span><span class="chip">例：角色成长线</span></div>
+        </article>
+        <article class="card span-6 pillar">
+          <span class="score">测试保留 71</span>
+          <h3>工具测评</h3>
+          <p class="lead">利于搜索和收藏，标题要从工具名改成结果收益。</p>
+          <div class="examples"><span class="chip">例：3 个镜头生成法</span><span class="chip">例：同一素材多平台改版</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="anomaly" class="panel">
+      <div class="grid">
+        <article class="card span-6">
+          <h2>异常高值：热点再创作短片</h2>
+          <p class="lead">高播放、高分享，但关注转化偏弱。原因通常是受众记住了热点对象，没有记住账号身份。</p>
+          <details open>
+            <summary>点击展开：怎么把爆款流量接回来</summary>
+            <p class="lead">爆款后 24 小时内补 1 条“制作拆解”或“原创替换方案”，把视觉记忆点、镜头语言、角色设计逻辑讲清楚，并在结尾明确账号长期会持续更新的板块。</p>
+          </details>
+        </article>
+        <article class="card span-6">
+          <h2>异常低值：纯展示型作品</h2>
+          <p class="lead">画面完成度不差，但缺少问题意识和讨论入口。用户看完不知道该评论什么，也不知道为什么要关注。</p>
+          <details open>
+            <summary>点击展开：怎么重写选题</summary>
+            <p class="lead">把“作品展示”改为“一个判断或实验”：例如“为什么同样是 AI 角色片，这个镜头更像广告？”再给出 3 个判断标准。</p>
+          </details>
+        </article>
+        <article class="card span-12">
+          <h2>异常样本表</h2>
+          <table>
+            <thead><tr><th>内容标题</th><th>板块</th><th>观看</th><th>互动率</th><th>千次观看涨粉</th><th>判断</th></tr></thead>
+            <tbody>
+              <tr><td>热点角色视觉实验</td><td>热点借势</td><td>9,200</td><td>7.4%</td><td>1.8</td><td>强传播，弱承接</td></tr>
+              <tr><td>AI 分镜拆解 01</td><td>方法拆解</td><td>2,600</td><td>14.8%</td><td>11.2</td><td>可系列化</td></tr>
+              <tr><td>虚拟品牌短片复盘</td><td>品牌案例</td><td>3,100</td><td>16.5%</td><td>9.6</td><td>商业价值强</td></tr>
+              <tr><td>节日氛围小短片</td><td>轻娱乐</td><td>5,400</td><td>8.2%</td><td>4.1</td><td>适合做流量入口</td></tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <section id="ideas" class="panel">
+      <div class="grid">
+        <article class="card span-12">
+          <h2>下一条内容建议</h2>
+          <div class="idea"><strong>1. 爆款之后怎么承接？拆一条热点视觉短片的 3 个记忆点</strong><p class="lead">目标：把热点流量转成专业关注。结构：先放结果，再拆镜头、角色、节奏，最后给出原创化改法。</p></div>
+          <div class="idea"><strong>2. 同一个创意，为什么小红书要讲情绪，抖音要讲冲突？</strong><p class="lead">目标：建立跨平台运营能力。结构：同素材双版本，对比封面、开头 3 秒、评论引导。</p></div>
+          <div class="idea"><strong>3. 1 个商业 brief，如何变成 5 条短视频选题？</strong><p class="lead">目标：承接潜在客户。结构：需求拆解、卖点转译、内容矩阵、发布时间建议。</p></div>
+          <div class="idea"><strong>4. AI 关键帧不是炫技，它决定短片有没有广告感</strong><p class="lead">目标：把收藏型内容做强。结构：错误示范、正确示范、可复制模板。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="privacy" class="panel">
+      <article class="card">
+        <h2>公开演示脱敏规则</h2>
+        <div class="privacy">
+          <p>本页面所有数字、标题、板块、案例均为模拟数据，不含真实账号后台数据。</p>
+          <p>开源仓库只保留 Skill、脚本、参考框架和虚拟样例，不提交真实 Excel/CSV、真实分析报告、真实截图、账号名、客户名、品牌名、评论、私信或可反查的爆款标题。</p>
+          <p>如果需要展示真实项目成果，应先替换账号名称、头像、文件名、重点数值、异常内容标题、客户/品牌/IP 名称，并使用区间或相对表达代替精确数据。</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const panels = document.querySelectorAll(".panel");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => item.setAttribute("aria-selected", "false"));
+        panels.forEach((panel) => panel.classList.remove("active"));
+        tab.setAttribute("aria-selected", "true");
+        document.getElementById(tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    const rows = [
+      { name: "热点借势", views: 62, follows: 26, examples: ["热点角色视觉实验", "节日热点视觉实验"] },
+      { name: "方法拆解", views: 18, follows: 84, examples: ["AI 分镜拆解 01", "提示词前后对比"] },
+      { name: "品牌案例", views: 13, follows: 76, examples: ["虚拟品牌短片复盘", "产品卖点概念片"] },
+      { name: "故事短片", views: 5, follows: 47, examples: ["反转小剧场", "角色成长线"] },
+      { name: "工具测评", views: 2, follows: 39, examples: ["3 个镜头生成法", "同素材多平台改版"] }
+    ];
+    const container = document.getElementById("barRows");
+    rows.forEach((row) => {
+      const el = document.createElement("div");
+      el.className = "bar-row";
+      el.innerHTML = `
+        <div class="bar-head"><span>${row.name}</span><span>观看占比 ${row.views}% · 转粉效率 ${row.follows}</span></div>
+        <div class="track"><div class="fill" style="width:${row.views}%"></div></div>
+        <div class="track"><div class="fill mint" style="width:${row.follows}%"></div></div>
+        <div class="examples">${row.examples.map((item) => `<span class="chip">例：${item}</span>`).join("")}</div>
+      `;
+      container.appendChild(el);
+    });
+
+    const canvas = document.getElementById("mixChart");
+    const ctx = canvas.getContext("2d");
+    function drawMix() {
+      const ratio = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      const data = [
+        ["点赞", 46, "#ff7d9f"],
+        ["收藏", 28, "#ff9c31"],
+        ["评论", 12, "#82a4f9"],
+        ["分享", 14, "#70e0c1"]
+      ];
+      const total = data.reduce((sum, item) => sum + item[1], 0);
+      const cx = rect.width / 2;
+      const cy = rect.height / 2 - 6;
+      const radius = Math.min(rect.width, rect.height) * .34;
+      let start = -Math.PI / 2;
+      data.forEach((item) => {
+        const end = start + Math.PI * 2 * item[1] / total;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = item[2];
+        ctx.fill();
+        start = end;
+      });
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * .56, 0, Math.PI * 2);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#202231";
+      ctx.font = "900 18px sans-serif";
+      ctx.fillText("互动结构", cx, cy - 2);
+      ctx.font = "700 12px sans-serif";
+      ctx.fillStyle = "#737586";
+      ctx.fillText("模拟数据", cx, cy + 20);
+      data.forEach((item, idx) => {
+        const x = 24 + (idx % 2) * (rect.width / 2);
+        const y = rect.height - 54 + Math.floor(idx / 2) * 24;
+        ctx.fillStyle = item[2];
+        ctx.fillRect(x, y, 12, 12);
+        ctx.fillStyle = "#303244";
+        ctx.font = "800 13px sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(`${item[0]} ${item[1]}%`, x + 18, y + 11);
+      });
+    }
+    drawMix();
+    window.addEventListener("resize", drawMix);
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+interface:
+  display_name: "自媒体账号分析师"
+  short_description: "拆解小红书/抖音账号数据，输出板块策略与内容建议"
+  brand_color: "#FF7D9F"
+  default_prompt: "Use $social-media-account-analyst to analyze my Xiaohongshu or Douyin account data and recommend the next content moves."
+
+policy:
+  allow_implicit_invocation: true

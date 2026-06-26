@@ -1,0 +1,21 @@
+# Private account exports and generated reports
+account-analysis/
+analysis-output/
+test-output/
+账号分析/
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+!skill/scripts/sample-xhs.csv
+
+# Local/generated outputs
+*.log
+__pycache__/
+*.pyc
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
